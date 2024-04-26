@@ -8,10 +8,10 @@ import { useNavigate } from "react-router-dom";
 import { BiArrowBack } from "react-icons/bi";
 import Loader from "../../Ui/Loader";
 
-function CheckOTPForm({ phoneNumber, onClick, onResendOtp }) {
+function CheckOTPForm({ onResendOtp, phoneNumber, onClick  }) {
   const [otp, setOtp] = useState();
-  const navigate = useNavigate();
   const [time, setTime] = useState(60);
+  const navigate = useNavigate();
 
   const { isPending, error, data, mutateAsync } = useMutation({
     mutationFn: checkOtp,
@@ -19,22 +19,21 @@ function CheckOTPForm({ phoneNumber, onClick, onResendOtp }) {
 
   const checkOtpHandler = async (event) => {
     event.preventDefault();
-    navigate("/complete-profile");
-
     try {
-      const { user, message } = await mutateAsync({ phoneNumber, otp });
-      toast.success(message);
+      const data = await mutateAsync({ phoneNumber, otp });
+      // console.log(data.user.role);
 
-      if (!user.isActive) return navigate("/complete-profile");
-      if (user.status !== 2) {
+      if (!data.user.isActive) return navigate("/complete-profile");
+      if (data.user.status !== 2) {
         navigate("/");
         toast.error("Profile waiting for verify...", {
           icon: "👏",
         });
         return;
       }
-      if (user.role === "OWNER") return navigate("/Owner");
-      if (user.role === "FREELANCER") return navigate("/Freelancer");
+      if (data.user.role === "OWNER") return navigate("/Owner");
+      if (data.user.role === "FREELANCER") return navigate("/Freelancer");
+      toast.success(data.message);
     } catch (error) {
       toast.error(error?.response?.data?.message);
     }
@@ -53,30 +52,30 @@ function CheckOTPForm({ phoneNumber, onClick, onResendOtp }) {
       {isPending ? (
         <Loader />
       ) : (
-        <form className="checkOTP__container" onSubmit={checkOtpHandler}>
+        <div className="checkOTP__container" >
           {/* backGround */}
           <span className="backGround"></span>
-          <div className="w-5/12 space-y-8">
+          <form className="w-6/12 space-y-8" onSubmit={checkOtpHandler}>
             <h2 className="header">
               <BiArrowBack className="back__arrow" onClick={onClick} />
               Enter The Code
             </h2>
             <p className="-tracking-tight text-white">
               Enter The CodeThat we send to your phone number{" "}
-              <span className="text-primary-800 text-lg font-bold">09******51</span> be careful
+              <span className="text-primary-800 text-lg font-bold">{phoneNumber}</span> be careful
               not to share code with any one
             </p>
             <OTPInput
               value={otp}
               onChange={setOtp}
-              numInputs={5}
+              numInputs={6}
               renderSeparator={<span className="p-3"></span>}
               renderInput={(props) => <input type="number" {...props} />}
-              containerStyle="flex flex-row-reverse justify-between"
+              containerStyle="flex justify-between"
               inputStyle="otp__input"
             />
             <aside className="space-y-2">
-              <button className="verify__btn">Verify phone Number</button>
+              <button type="submit" className="verify__btn">Verify phone Number</button>
               <button onClick={onClick} className="cancel__btn">
                 Cancel
               </button>
@@ -87,7 +86,7 @@ function CheckOTPForm({ phoneNumber, onClick, onResendOtp }) {
                   </span>
                 ) : (
                   <button
-                    onClick={onResendOtp()}
+                    onClick={onResendOtp}
                     className="hover:text-primary-900 hover:tracking-widest transition-all duration-300"
                   >
                     Resend code?
@@ -95,9 +94,9 @@ function CheckOTPForm({ phoneNumber, onClick, onResendOtp }) {
                 )}
               </button>
             </aside>
-          </div>
+          </form>
           <img src={OTP_bg} alt="OTP-BG" className="w-5/12 h-full" />
-        </form>
+        </div>
       )}
     </div>
   );

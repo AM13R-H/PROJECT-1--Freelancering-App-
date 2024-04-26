@@ -1,0 +1,20 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .textField__input {
+    @apply bg-transparent border-2 px-2 py-2 rounded-lg w-full h-full text-secondary-0;
+  }
+  .label__input {
+    @apply text-secondary-0  top-1/4 left-2 bg-transparent;
+  }
+}
+
+
+.textField__input:focus {
+  border: 2px solid rgb(var(--color-primary-900));
+  .label__input {
+    color: rgb(var(--color-primary-900));
+  }
+}

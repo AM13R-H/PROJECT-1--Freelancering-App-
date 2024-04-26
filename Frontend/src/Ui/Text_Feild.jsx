@@ -1,31 +1,23 @@
-import { useState } from "react";
+// import { useState } from 'react';
+import '../styles/sassCompiler/textFeild.min.css';
 
-function Text_Feild({
-  value,
-  onChange,
-  name,
-  label,
-  type,
-  inputStyle,
-  labelStyle,
-}) {
-
+function Text_Feild({ name, label, type, register, validationSchema, requierd, errors }) {
+  // console.log(errors);
   return (
-    <div
-      className={`flex flex-col`}
-    >
-      <label className={labelStyle} htmlFor={name}>
-        {label}
+    <div className={`relative flex flex-col bg-transparent`}>
+      <label className="label__input" htmlFor={name}>
+        {label} {requierd && <span className="text-red-500 text-xs">*</span>}
       </label>
       <input
-        value={value}
-        onChange={onChange}
-        className={inputStyle}
+        {...register(name, validationSchema)}
+        className="textField__input"
         id={name}
         name={name}
         type={type}
         autoComplete="off"
+        // placeholder={`Enter ${name}`}
       />
+      {errors && errors[name] && <span>{errors[name]?.message}</span>}
     </div>
   );
 }

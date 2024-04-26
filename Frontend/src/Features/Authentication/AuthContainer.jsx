@@ -1,26 +1,31 @@
-import { useState } from "react";
-import SendOTPForm from "./SendOTPForm";
-import CheckOTPForm from "./CheckOTPForm";
-import { useMutation } from "@tanstack/react-query";
-import { getOtp } from "../../Services/authService";
-import toast from "react-hot-toast";
+import { useState } from 'react';
+import SendOTPForm from './SendOTPForm';
+import CheckOTPForm from './CheckOTPForm';
+import { useMutation } from '@tanstack/react-query';
+import { getOtp } from '../../Services/authService';
+import toast from 'react-hot-toast';
+import { useForm } from 'react-hook-form';
 
 function AuthContainer() {
   const [step, setStep] = useState(1);
-  const [phoneNumber, setPhoneNumber] = useState("");
-  // console.log(phoneNumber);
+  const {
+    register,
+    formState: { errors },
+    handleSubmit,
+    getValues
+  } = useForm();
   const { isPending: isSendingOtp, mutateAsync } = useMutation({
     mutationFn: getOtp,
   });
 
-  const sendOtpHandler = async (event) => {
-    event.preventDefault();
+  const sendOtpHandler = async (data) => {
+    // const phoneNumber = data.PhoneNumber;
 
     try {
-      const data = await mutateAsync({ phoneNumber });
-      console.log(phoneNumber);
+      const {message} = await mutateAsync(data);
+      console.log(data);
       setStep(2);
-      toast.success(data.message);
+      toast.success(message);
     } catch (error) {
       toast.error(error?.response?.data?.message);
     }
@@ -31,18 +36,18 @@ function AuthContainer() {
       case 1:
         return (
           <SendOTPForm
-            onSubmit={sendOtpHandler}
+            onSubmit={handleSubmit(sendOtpHandler)}
             isSendingOtp={isSendingOtp}
             setStep={setStep}
-            phonNumber={phoneNumber}
-            onChange={(e) => setPhoneNumber(e.target.value)}
+            register={register}
+            errors={errors}
           />
         );
       case 2:
         return (
           <CheckOTPForm
             onResendOtp={sendOtpHandler}
-            phoneNumber={phoneNumber}
+            phoneNumber={getValues("phoneNumber")}
             onClick={() => setStep(1)}
           />
         );

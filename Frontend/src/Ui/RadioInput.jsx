@@ -1,15 +1,15 @@
-function RadioInput({ name, value, onChange, inputStyle, labelStyle }) {
+function RadioInput({ name, value, register, validationSchema }) {
   return (
-    <div className="space-x-2">
+    <div className="space-x-2 hover:tracking-widest hover:cursor-pointer">
       <input
+        {...register(name , validationSchema)}
         type="radio"
         name={name}
         id={value}
         value={value}
-        onChange={onChange}
-        className={inputStyle}
+        className="radio__input"
       />
-      <label htmlFor={value} className={labelStyle}>
+      <label htmlFor={value} className="label__Radio">
         {value}
       </label>
     </div>

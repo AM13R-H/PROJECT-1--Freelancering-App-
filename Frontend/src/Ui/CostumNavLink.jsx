@@ -2,14 +2,14 @@ import { NavLink } from "react-router-dom";
 
 function CostumNavLink({path, style, children}) {
   return (
-    <div>
+    <li>
       <NavLink
         to={path}
         className={style}
       >
         {children}
       </NavLink>
-    </div>
+    </li>
   );
 }
 
